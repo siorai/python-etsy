@@ -1,5 +1,5 @@
 from etsy import Etsy
-import json 
+import pickle 
 __author__ = 'siorai@gmail.com (Paul Waldorf)'
 
 
@@ -58,7 +58,7 @@ def verify(client_key, client_secret):
     credentials_dict['client_key'] = client_key
     credentials_dict['client_secret'] = client_secret
     print('Writting: %s') % credentials_dict
-    json.dump(credentials_dict, open(credentials, 'w'))
+    pickle.dump(credentials_dict, open(credentials, 'w'))
   elif correct_info == 'n':
     initialize()
   else:
