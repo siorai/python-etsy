@@ -1,5 +1,5 @@
 from etsy import Etsy
-
+import json 
 __author__ = 'siorai@gmail.com (Paul Waldorf)'
 
 
@@ -18,11 +18,24 @@ def initialize():
     use_em = raw_input('y/n')
     if use_em == 'n':
       get_credentials()
-    else:
+    elif use_em == 'y':
       print('Using em!')
+    else:
+      print('What was what?')
+      initialize()
   except IOError:
-    print('Cannot find %s, creating new') % credentials
-    get_credentials()
+    print('Credentials file not found, would you like to create one?')
+    create_it = raw_input('y/n')
+    if create_it == 'y':
+      f_cred = open(credentials, 'w')
+      print('%s has been created, populating...') % credentials
+      f_cred.close
+      get_credentials()
+    else: 
+      print('Exiting...')
+  
+    #print('Cannot find %s, creating new') % credentials
+  
   
 
 
@@ -44,8 +57,8 @@ def verify(client_key, client_secret):
     print("Client key is %s and client secret is %s") % (client_key, client_secret)
     credentials_dict['client_key'] = client_key
     credentials_dict['client_secret'] = client_secret
-    print("From credentials dict:")
-    print(credentials_dict)
+    print('Writting: %s') % credentials_dict
+    json.dump(credentials_dict, open(credentials, 'w'))
   elif correct_info == 'n':
     initialize()
   else:
