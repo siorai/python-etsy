@@ -54,6 +54,84 @@ class Etsy(object):
         response = self.execute(endpoint, params=params)
         return response
 
+    def parse_receipt_ids(self, dictionary_file):
+        """
+        Parses 'receipt_id' values from get_transactions()
+        by first compiling a list of the values stored 'results'
+        key for the dictionary, then pulls out 'receipt_id' from
+        each entry in the list that was created.
+
+        Args:
+            dictionary_file: object referenced when self.get_transactions()
+		is instantiated
+
+	Returns:
+	    receipt_id_list: list of receipt_ids
+	"""        
+
+        results_list = []
+        for res in dictionary_file['results']:
+             results_list.append(res)
+  
+        receipt_id_list = []
+        for Each_entry in results_list:
+            receipt_id_list.append(Each_entry['receipt_id'])
+  
+        return receipt_id_list
+
+    def parse_from_receipt_dictionary(self, unparsed_list):
+        """
+        Parses the unparsed_list from self.get_shop_Receipt
+	by first creating a list with entries matching the 
+	key 'results' from the unparsed_list, then parsing 
+	each entry for the key 'buyer_email' and returning 
+	that list as buyer_email_list
+
+	Args:
+	    unparsed_list: list from self.get_shop_Receipt
+
+	Returns:
+	    list containing all of the email addresses from
+	    the associated list of receipts         
+
+	"""
+        
+	receipts_list = []
+        for each_receipt in unparsed_list['results']:
+            receipts_list.append(each_receipt)
+  
+        buyer_email_list = []
+        for Each_entry in receipts_list:
+            buyer_email_list.append(Each_entry['buyer_email'])
+
+        return buyer_email_list
+
+    def get_shop_Receipt(self, user, receipt_id):
+	"""
+	Fetches receipts from the etsy api
+
+	Usage: receipt_json = get_shop_Receipt('__NAME__', '123456789, 987654321')
+
+	Currently I haven't been able to feed it the receipt_id_list directly, 
+	so requesting more than one receipt per request has to be done manually as
+	stated above
+
+	Args:
+	    user: should be set to '__NAME__', but another user can be used
+	    receipt_id: receipt_id fetched by way of self.parse_receipt_ids
+
+	Returns:
+	    direct output from server in the form of a JSON containing receipts
+
+	"""	        
+	endpoint = '/receipts/%s' % receipt_id
+        params = {'receipt_id': receipt_id}
+        if user == '__SELF__':
+            auth = {'oauth': self.full_oauth}
+        
+	response = self.execute(endpoint, params=params, **auth)
+        return response
+
 
     def get_transactions(self, user, shop_id, number_of_transactions):
         """
