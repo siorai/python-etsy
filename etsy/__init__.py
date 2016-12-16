@@ -66,7 +66,8 @@ class Etsy(object):
 		is instantiated
 
 	Returns:
-	    receipt_id_list: list of receipt_ids
+	    receipt_id_list: list of receipt_ids without 
+            brackets to be passed to self.get_shop_request()
 	"""        
 
         results_list = []
@@ -76,8 +77,10 @@ class Etsy(object):
         receipt_id_list = []
         for Each_entry in results_list:
             receipt_id_list.append(Each_entry['receipt_id'])
-  
-        return receipt_id_list
+        
+        formatted_id_list = str(receipt_id_list).strip('[]')
+
+        return formatted_id_list
 
     def parse_from_receipt_dictionary(self, unparsed_list):
         """
@@ -112,10 +115,7 @@ class Etsy(object):
 
 	Usage: receipt_json = get_shop_Receipt('__NAME__', '123456789, 987654321')
 
-	Currently I haven't been able to feed it the receipt_id_list directly, 
-	so requesting more than one receipt per request has to be done manually as
-	stated above
-
+	
 	Args:
 	    user: should be set to '__NAME__', but another user can be used
 	    receipt_id: receipt_id fetched by way of self.parse_receipt_ids
